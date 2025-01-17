@@ -29,3 +29,4 @@ dependencyResolutionManagement {
 }
 
 include(":konfetti")
+include(":sample")
