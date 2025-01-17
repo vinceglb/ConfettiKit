@@ -1,0 +1,7 @@
+package io.github.vinceglb.konfetti
+
+interface Platform {
+    val name: String
+}
+
+expect fun getPlatform(): Platform
