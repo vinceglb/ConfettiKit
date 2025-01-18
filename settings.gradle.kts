@@ -1,4 +1,4 @@
-rootProject.name = "ConfettiKit"
+// rootProject.name = "ConfettiKit-Library"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
