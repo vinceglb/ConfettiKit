@@ -1,3 +1,4 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
@@ -22,7 +23,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "KonfettiSampleApp"
+            baseName = "ComposeApp"
             isStatic = true
         }
     }
@@ -30,9 +31,12 @@ kotlin {
     jvm("desktop")
 
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "sampleApp"
-        browser {
+    listOf(
+        js(),
+        wasmJs(),
+    ).forEach {
+        it.moduleName = "sampleApp"
+        it.browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
@@ -46,10 +50,12 @@ kotlin {
                 }
             }
         }
-        binaries.executable()
+        it.binaries.executable()
     }
 
     sourceSets {
+        val desktopMain by getting
+
         commonMain.dependencies {
             // Compose
             implementation(compose.runtime)
@@ -66,6 +72,10 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+        }
+
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 }
@@ -99,4 +109,16 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+compose.desktop {
+    application {
+        mainClass = "io.github.vinceglb.konfetti.sample.MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "io.github.vinceglb.konfetti.sample"
+            packageVersion = "1.0.0"
+        }
+    }
 }

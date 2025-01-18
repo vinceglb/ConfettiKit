@@ -10,6 +10,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+//        val dr = Drawable
+//        DrawableResource
+
         setContent {
             App()
         }

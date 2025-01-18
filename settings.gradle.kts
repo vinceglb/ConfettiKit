@@ -1,4 +1,4 @@
-rootProject.name = "KonfettiCompose"
+rootProject.name = "konfetti-kt"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -29,4 +29,4 @@ dependencyResolutionManagement {
 }
 
 include(":konfetti")
-include(":sample")
+include(":sample:composeApp")

@@ -8,6 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.github.vinceglb.konfetti.compose.KonfettiView
+import io.github.vinceglb.konfetti.core.Party
+import io.github.vinceglb.konfetti.core.emitter.Emitter
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun App() {
@@ -19,6 +23,14 @@ fun App() {
                 .fillMaxSize(),
         ) {
             Text("Hello, Konfetti!")
+            KonfettiView(
+                modifier = Modifier.fillMaxSize(),
+                parties = listOf(
+                    Party(
+                        emitter = Emitter(duration = 5.0.seconds).perSecond(30)
+                    )
+                ),
+            )
         }
     }
 }
