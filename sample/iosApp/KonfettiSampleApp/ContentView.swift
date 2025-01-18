@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  KonfettiSampleApp
+//
+//  Created by Vincent Guillebaud on 18/01/2025.
+//
+
 import UIKit
 import SwiftUI
 import ComposeApp
@@ -13,9 +20,10 @@ struct ComposeView: UIViewControllerRepresentable {
 struct ContentView: View {
     var body: some View {
         ComposeView()
-                .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
+                .ignoresSafeArea(.all)
     }
 }
 
-
-
+#Preview {
+    ContentView()
+}
