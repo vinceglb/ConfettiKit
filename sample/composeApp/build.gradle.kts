@@ -65,8 +65,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            // Konfetti
-            implementation(projects.konfetti)
+            // ConfettiKit
+            implementation(projects.confettikit)
         }
 
         androidMain.dependencies {
@@ -81,11 +81,11 @@ kotlin {
 }
 
 android {
-    namespace = "io.github.vinceglb.konfetti.sample"
+    namespace = "io.github.vinceglb.confettikit.sample"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "io.github.vinceglb.konfetti.sample"
+        applicationId = "io.github.vinceglb.confettikit.sample"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -113,11 +113,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "io.github.vinceglb.konfetti.sample.MainKt"
+        mainClass = "io.github.vinceglb.confettikit.sample.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "io.github.vinceglb.konfetti.sample"
+            packageName = "io.github.vinceglb.confettikit.sample"
             packageVersion = "1.0.0"
         }
     }
