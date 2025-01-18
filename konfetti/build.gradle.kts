@@ -45,6 +45,11 @@ kotlin {
         commonMain.dependencies {
             // Compose
             implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+
+            // Kotlinx
+            api(libs.kotlinx.datetime)
         }
     }
 }
@@ -54,5 +59,9 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
