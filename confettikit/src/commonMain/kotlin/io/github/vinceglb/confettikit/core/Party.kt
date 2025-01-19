@@ -62,12 +62,12 @@ public data class Party(
  * [BOTTOM] 90 degrees
  * [LEFT] 180 degrees
  */
-internal class Angle {
-    companion object {
-        const val TOP: Int = 270
-        const val RIGHT: Int = 0
-        const val BOTTOM: Int = 90
-        const val LEFT: Int = 180
+public class Angle {
+    public companion object {
+        public const val TOP: Int = 270
+        public const val RIGHT: Int = 0
+        public const val BOTTOM: Int = 90
+        public const val LEFT: Int = 180
     }
 }
 
@@ -75,11 +75,11 @@ internal class Angle {
  * Helper class for for easily configuring [Spread] when creating a [Party]
  * These are presets but any custom amount will work within 0-360 degrees
  */
-internal class Spread {
-    companion object {
-        const val SMALL: Int = 30
-        const val WIDE: Int = 100
-        const val ROUND: Int = 360
+public class Spread {
+    public companion object {
+        public const val SMALL: Int = 30
+        public const val WIDE: Int = 100
+        public const val ROUND: Int = 360
     }
 }
 
