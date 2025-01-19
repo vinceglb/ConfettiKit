@@ -64,8 +64,6 @@ A Party configuration object controls every aspect of your confetti animation. W
 Party(
     angle = 90,    // Straight up
     spread = 45,   // 45-degree spread
-    speed = 30f,   // Initial speed
-    maxSpeed = 40f // Maximum speed
 )
 ```
 
@@ -74,7 +72,7 @@ The direction and spread of your confetti is controlled by several properties:
 **`angle`**
 - Think of this as the direction your confetti launcher is pointing
 - 0° points right, 90° points up, 180° points left, 270° points down
-- Use convenient presets like Angle.TOP, Angle.RIGHT, Angle.BOTTOM, Angle.LEFT
+- Use convenient presets like `Angle.TOP`, `Angle.RIGHT`, `Angle.BOTTOM`, `Angle.LEFT`
 - Example: angle = 45 launches confetti diagonally up and right
 
 **`spread`**
@@ -82,6 +80,7 @@ The direction and spread of your confetti is controlled by several properties:
 - Think of it like adjusting a garden sprayer nozzle
 - 360° creates a full circular burst
 - 1° creates a focused line
+- Use convenient presets like `Spread.SMALL`, `Spread.WIDE` and `Spread.ROUND`
 - Example: spread = 90 creates a quarter-circle spray pattern
 
 #### 🏃‍♂️ Velocity Control
@@ -101,7 +100,7 @@ Control how fast your confetti moves and how it slows down:
 - Higher values make confetti shoot out faster
 
 **`maxSpeed`**
-- Creates natural variation by randomly picking speeds
+- Creates natural variation by randomly picking speeds between `speed` and `maxSpeed`
 - Set to -1 to disable the upper limit
 - Example: speed = 20f, maxSpeed = 30f means each piece will have a random speed between 20 and 30
 
@@ -130,11 +129,13 @@ Customize how your confetti looks:
 
 **`shapes`**
 - Define what shapes your confetti can be
+- Use `Shape.Circle`, `Shape.Square` and `Shape.Rectangle()`
 - Example: shapes = listOf(Shape.Circle) for circular confetti only
 
 **`sizes`**
 - Control how big your confetti pieces are
 - Mix different sizes for more dynamic effects
+- Use convenient presets like `Size.SMALL`, `Size.MEDIUM` and `Size.LARGE`
 - Example: size = listOf(Size.SMALL) for subtle, delicate confetti
 
 ### ⚡ Animation Lifecycle 
@@ -144,6 +145,7 @@ Party(
     timeToLive = 3000,       // 3 seconds lifetime
     fadeOutEnabled = true,   // Fade out at end
     delay = 500,             // Start after 500ms
+    position = Position.Relative(0.5, 0.5),
     rotation = Rotation.enabled()
 )
 ```
@@ -160,12 +162,22 @@ Control the timing and behavior of your confetti:
 - When false, it disappears instantly
 - Example: fadeOutEnabled = false for sharp disappearance
 
+**`delay`**
+- How long to wait before starting the animation (in milliseconds)
+- Use this to create a delay before the confetti starts
+- Example: delay = 1000 starts confetti 1 second after the view appears
+
 **`position`**
 - Where confetti spawns from
 - Use Position.Absolute(x, y) for exact screen coordinates
 - Use Position.Relative(x, y) for responsive positioning (0.0 to 1.0)
-- Use Position.between() for random positions
+- Use Position.Between(min, max) for random positions between two points
 - Example: position = Position.Relative(0.5, 0.0) spawns from top center
+
+**`rotation`**
+- Control whether confetti rotates as it falls
+- Use `Rotation.enabled()` to enable rotation
+- Use `Rotation.disabled()` to disable rotation
 
 ### 🌟 Emission Control 
 

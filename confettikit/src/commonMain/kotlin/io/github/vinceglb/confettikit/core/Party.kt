@@ -114,7 +114,7 @@ public sealed class Position {
      * Example: Relative(0.0, 0.0).between(Relative(1.0, 0.0))
      * This will spawn confetti from the full width and top of the view
      */
-    internal data class Between(val min: Position, val max: Position) : Position()
+    public data class Between(val min: Position, val max: Position) : Position()
 }
 
 /**
