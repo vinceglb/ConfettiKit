@@ -8,6 +8,12 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "ConfettiKit",
     ) {
+        window.apply {
+            rootPane.putClientProperty("apple.awt.fullWindowContent", true)
+            rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
+            rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
+        }
+
         App()
     }
 }
