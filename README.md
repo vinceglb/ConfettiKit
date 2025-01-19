@@ -15,15 +15,17 @@
   </div>
 
   <p align="center">
-    <a href="#installation">Installation</a> •
-    <a href="#usage">Quick Start</a> •
-    <a href="#community">Documentation</a> •
-    <a href="#recipes">Recipes</a> •
-    <a href="#sample">Sample project</a> •
+    <a href="#-installation">Installation</a> •
+    <a href="#-creating-your-first-celebration">Quick start</a> •
+    <a href="#-customizing-your-celebration">Documentation</a> •
+    <a href="#-recipes">Recipes</a> •
+    <a href="https://github.com/vinceglb/ConfettiKit/tree/main/sample">Sample project</a>
   </p>
 
   <br>
 </div>
+
+## 😎 Credits
 
 > This library is based on the incredible work of [@DanielMartinus](https://github.com/DanielMartinus) on his Android [Konfetti](https://github.com/DanielMartinus/Konfetti) library and has been adapted for Kotlin Multiplatform and Compose Multiplatform.
 
@@ -185,7 +187,7 @@ ConfettiKit is designed to work seamlessly with Compose. You can use it as a Com
 ConfettiKit(
     modifier = Modifier.fillMaxSize(),
     parties = parties,
-    onParticleSystemEnded: { system, activeSystems -> }
+    onParticleSystemEnded = { system, activeSystems -> }
 )
 ```
 
@@ -261,12 +263,6 @@ fun rain(): List<Party> {
 ## 🌱 Sample project
 
 Check out the [sample project](https://github.com/vinceglb/ConfettiKit/tree/main/sample) for a complete example of how to use ConfettiKit in your app.
-
-## 😎 Credits
-
-ConfettiKit is inspired by the following libraries:
-
-- [Konfetti](https://github.com/DanielMartinus/Konfetti)
 
 ---
 
