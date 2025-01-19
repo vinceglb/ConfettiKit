@@ -22,7 +22,7 @@ import kotlinx.datetime.Clock
 public fun ConfettiKit(
     modifier: Modifier = Modifier,
     parties: List<Party>,
-    updateListener: OnParticleSystemUpdateListener? = null,
+    onParticleSystemEnded: (PartySystem, Int) -> Unit = { _, _ -> },
 ) {
     lateinit var partySystems: List<PartySystem>
 
@@ -41,21 +41,12 @@ public fun ConfettiKit(
      */
     val drawArea = remember { mutableStateOf(CoreRect.CoreRectImpl()) }
 
-    /**
-     * Store for drawable images
-     */
-//    val imageStore = remember { ImageStore() }
-
     val density = LocalDensity.current
 
     LaunchedEffect(Unit) {
         partySystems = parties.map {
             PartySystem(
-                party = storeImages(
-                    it,
-                    // imageStore
-                ),
-                // pixelDensity = Resources.getSystem().displayMetrics.density,
+                party = storeImages(it),
                 pixelDensity = density.density,
             )
         }
@@ -66,22 +57,20 @@ public fun ConfettiKit(
                 val deltaMs = if (frameTime.value > 0) (frameMs - frameTime.value) else 0
                 frameTime.value = frameMs
 
-                particles.value =
-                    partySystems.map { particleSystem ->
+                particles.value = partySystems.map { particleSystem ->
+                    val totalTimeRunning = getTotalTimeRunning(particleSystem.createdAt)
+                    // Do not start particleSystem yet if totalTimeRunning is below delay
+                    if (totalTimeRunning < particleSystem.party.delay) return@map listOf()
 
-                        val totalTimeRunning = getTotalTimeRunning(particleSystem.createdAt)
-                        // Do not start particleSystem yet if totalTimeRunning is below delay
-                        if (totalTimeRunning < particleSystem.party.delay) return@map listOf()
+                    if (particleSystem.isDoneEmitting()) {
+                        onParticleSystemEnded(
+                            particleSystem,
+                            partySystems.count { !it.isDoneEmitting() },
+                        )
+                    }
 
-                        if (particleSystem.isDoneEmitting()) {
-                            updateListener?.onParticleSystemEnded(
-                                system = particleSystem,
-                                activeSystems = partySystems.count { !it.isDoneEmitting() },
-                            )
-                        }
-
-                        particleSystem.render(deltaMs.div(1000f), drawArea.value)
-                    }.flatten()
+                    particleSystem.render(deltaMs.div(1000f), drawArea.value)
+                }.flatten()
             }
         }
     }
@@ -100,8 +89,7 @@ public fun ConfettiKit(
                 withTransform({
                     rotate(
                         degrees = particle.rotation,
-                        pivot =
-                        Offset(
+                        pivot = Offset(
                             x = particle.x + (particle.width / 2),
                             y = particle.y + (particle.height / 2),
                         ),
