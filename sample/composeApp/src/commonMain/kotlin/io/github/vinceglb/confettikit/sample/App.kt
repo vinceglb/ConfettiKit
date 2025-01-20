@@ -37,7 +37,7 @@ fun App() {
                     enabled = !isAnimating,
                     onClick = { isAnimating = !isAnimating },
                 ) {
-                    Text("Fiesta \uD83E\uDD73")
+                    Text("Fiesta 🥳")
                 }
             }
 

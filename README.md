@@ -22,6 +22,8 @@
     <a href="https://github.com/vinceglb/ConfettiKit/tree/main/sample">Sample project</a>
   </p>
 
+  <a href="https://vinceglb.github.io/ConfettiKit/">Try here 🥳</a>
+
   <br>
 </div>
 
