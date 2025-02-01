@@ -30,3 +30,4 @@ dependencyResolutionManagement {
 
 include(":confettikit")
 include(":sample:composeApp")
+
