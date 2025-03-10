@@ -7,7 +7,7 @@ androidx-activityCompose = "1.10.0"
 compose-multiplatform = "1.7.3"
 kotlin = "2.1.10"
 kotlinx-datetime = "0.6.2"
-vanniktech-mavenPublish = "0.30.0"
+vanniktech-mavenPublish = "0.31.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
