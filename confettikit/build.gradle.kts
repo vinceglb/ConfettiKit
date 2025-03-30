@@ -37,7 +37,7 @@ kotlin {
         js(),
         wasmJs(),
     ).forEach {
-        it.moduleName = "ConfettiKit"
+        it.outputModuleName = "ConfettiKit"
         it.browser()
     }
     
