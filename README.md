@@ -39,6 +39,8 @@ dependencies {
 }
 ```
 
+> ConfettiKit requires Kotlin 2.1.0 or higher.
+
 ## ✨ Creating Your First Celebration
 
 The simplest way to get the party started is:
