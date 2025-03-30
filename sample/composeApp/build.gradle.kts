@@ -35,7 +35,7 @@ kotlin {
         js(),
         wasmJs(),
     ).forEach {
-        it.moduleName = "sampleApp"
+        it.outputModuleName = "sampleApp"
         it.browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
