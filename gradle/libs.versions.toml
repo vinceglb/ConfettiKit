@@ -8,10 +8,12 @@ compose-multiplatform = "1.7.3"
 kotlin = "2.1.20"
 kotlinx-datetime = "0.6.2"
 vanniktech-mavenPublish = "0.31.0"
+androidx-lifecycle = "2.8.4"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

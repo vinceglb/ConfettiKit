@@ -11,6 +11,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import io.github.vinceglb.confettikit.core.Particle
 import io.github.vinceglb.confettikit.core.Party
 import io.github.vinceglb.confettikit.core.PartySystem
@@ -43,6 +45,9 @@ public fun ConfettiKit(
 
     val density = LocalDensity.current
 
+    LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
+        frameTime.value = 0L
+    }
     LaunchedEffect(Unit) {
         partySystems = parties.map {
             PartySystem(
