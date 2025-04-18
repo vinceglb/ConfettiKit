@@ -16,6 +16,7 @@ import kotlin.math.abs
  * @property shape The geometric shape of the particle.
  * @property lifespan The duration the particle should be fully visible (opaque) for in milliseconds.
  * @property fadeOut If true, the particle will gradually become transparent after its lifespan has elapsed.
+ * @property fadeOutDuration The duration of the fade out in milliseconds.
  * @property acceleration The current acceleration of the particle.
  * @property velocity The current velocity of the particle.
  * @property damping A factor that reduces the particle's velocity over time, simulating air resistance. A higher damping value will slow down the particle faster.
@@ -31,6 +32,7 @@ internal class Confetti(
     val shape: Shape,
     var lifespan: Long = -1L,
     val fadeOut: Boolean = true,
+    private val fadeOutDuration: Long = 850,
     private var acceleration: Vector = Vector(0f, 0f),
     var velocity: Vector = Vector(),
     var damping: Float,
@@ -41,7 +43,6 @@ internal class Confetti(
     companion object {
         private const val DEFAULT_FRAME_RATE = 60f
         private const val GRAVITY = 0.02f
-        private const val ALPHA_DECREMENT = 5
         private const val MAX_ALPHA = 255
         private const val MILLIS_IN_SECOND = 1000
         private const val FULL_CIRCLE = 360f
@@ -119,7 +120,7 @@ internal class Confetti(
         location.addScaled(velocity, deltaTime * frameRate * pixelDensity)
 
         lifespan -= (deltaTime * MILLIS_IN_SECOND).toLong()
-        if (lifespan <= 0) updateAlpha(deltaTime)
+        if (lifespan <= 0) updateAlpha(fadeOutElapsed = -lifespan)
 
         // 2D rotation around the center of the confetti
         rotation += rotationSpeed2D * deltaTime * frameRate
@@ -136,11 +137,11 @@ internal class Confetti(
         drawParticle = drawArea.contains(location.x.toInt(), location.y.toInt())
     }
 
-    private fun updateAlpha(deltaTime: Float) {
+    private fun updateAlpha(fadeOutElapsed: Long) {
         alpha =
-            if (fadeOut) {
-                val interval = ALPHA_DECREMENT * deltaTime * frameRate
-                (alpha - interval.toInt()).coerceAtLeast(0)
+            if (fadeOut && fadeOutDuration > 0) {
+                val progress = (fadeOutElapsed.toFloat() / fadeOutDuration).coerceIn(0f, 1f)
+                (MAX_ALPHA * (1 - progress)).toInt()
             } else {
                 0
             }
