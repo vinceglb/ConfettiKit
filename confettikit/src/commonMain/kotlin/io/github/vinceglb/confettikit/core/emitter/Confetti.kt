@@ -42,6 +42,7 @@ internal class Confetti(
         private const val DEFAULT_FRAME_RATE = 60f
         private const val GRAVITY = 0.02f
         private const val ALPHA_DECREMENT = 5
+        private const val MAX_ALPHA = 255
         private const val MILLIS_IN_SECOND = 1000
         private const val FULL_CIRCLE = 360f
     }
@@ -53,7 +54,7 @@ internal class Confetti(
     private var frameRate = DEFAULT_FRAME_RATE
     private var gravity = Vector(0f, GRAVITY)
 
-    var alpha: Int = 255
+    var alpha: Int = MAX_ALPHA
     var scaleX = 0f
 
     /**
