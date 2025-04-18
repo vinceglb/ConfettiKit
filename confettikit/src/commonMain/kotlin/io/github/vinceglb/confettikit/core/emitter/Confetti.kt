@@ -14,8 +14,8 @@ import kotlin.math.abs
  * @property width The width of the particle in pixels.
  * @property mass The mass of the particle, affecting how forces like gravity influence it. A particle with more mass will move slower under the same force.
  * @property shape The geometric shape of the particle.
- * @property lifespan The duration the particle should exist for in milliseconds.
- * @property fadeOut If true, the particle will gradually become transparent over its lifespan.
+ * @property lifespan The duration the particle should be fully visible (opaque) for in milliseconds.
+ * @property fadeOut If true, the particle will gradually become transparent after its lifespan has elapsed.
  * @property acceleration The current acceleration of the particle.
  * @property velocity The current velocity of the particle.
  * @property damping A factor that reduces the particle's velocity over time, simulating air resistance. A higher damping value will slow down the particle faster.
