@@ -26,7 +26,8 @@ import io.github.vinceglb.confettikit.core.models.Size
  * @property timeToLive the amount of time in milliseconds before a particle will stop rendering
  * or fade out if [fadeOutEnabled] is set to true.
  * @property fadeOutEnabled If true and a confetti disappears because it ran out of time (set with timeToLive)
- * it will slowly fade out. If set to falls it will instantly disappear from the screen.
+ * it will slowly fade out. If set to false it will instantly disappear from the screen.
+ * @property fadeOutDuration the duration of the fade out effect, only used if [fadeOutEnabled] is set to true.
  * @property position the point where the confetti will spawn relative to the canvas. Use absolute
  * coordinates with [Position.Absolute] or relative coordinates between 0.0 and 1.0 using [Position.Relative].
  * Spawn confetti on random positions using [Position.Between].
@@ -49,6 +50,7 @@ public data class Party(
     val shapes: List<Shape> = listOf(Shape.Square, Shape.Circle),
     val timeToLive: Long = 2000,
     val fadeOutEnabled: Boolean = true,
+    val fadeOutDuration: Long = 850,
     val position: Position = Position.Relative(0.5, 0.5),
     val delay: Int = 0,
     val rotation: Rotation = Rotation(),

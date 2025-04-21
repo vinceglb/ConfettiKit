@@ -86,6 +86,7 @@ internal class PartyEmitter(
                 color = colors[random.nextInt(colors.size)],
                 lifespan = timeToLive,
                 fadeOut = fadeOutEnabled,
+                fadeOutDuration = fadeOutDuration,
                 velocity = getVelocity(),
                 damping = party.damping,
                 rotationSpeed2D = rotation.rotationSpeed() * party.rotation.multiplier2D,
