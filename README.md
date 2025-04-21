@@ -35,7 +35,7 @@
 
 ```kotlin
 dependencies {
-    implementation("io.github.vinceglb:confettikit:0.2.0")
+    implementation("io.github.vinceglb:confettikit:0.3.0")
 }
 ```
 
