@@ -4,7 +4,8 @@ import io.github.vinceglb.confettikit.core.emitter.BaseEmitter
 import io.github.vinceglb.confettikit.core.emitter.Confetti
 import io.github.vinceglb.confettikit.core.emitter.PartyEmitter
 import io.github.vinceglb.confettikit.core.models.CoreRect
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * PartySystem is responsible for requesting particles from the emitter and updating the particles
@@ -13,6 +14,7 @@ import kotlinx.datetime.Clock
  * @param createdAt timestamp of when the partySystem is created
  * @param pixelDensity default value taken from resources to measure based on pixelDensity
  */
+@OptIn(ExperimentalTime::class)
 public class PartySystem(
     public val party: Party,
     public val createdAt: Long = Clock.System.now().toEpochMilliseconds(),

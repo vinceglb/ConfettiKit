@@ -18,7 +18,8 @@ import io.github.vinceglb.confettikit.core.Party
 import io.github.vinceglb.confettikit.core.PartySystem
 import io.github.vinceglb.confettikit.core.models.CoreRect
 import io.github.vinceglb.confettikit.core.models.Shape
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 public fun ConfettiKit(
@@ -129,6 +130,7 @@ internal fun storeImages(
     return party.copy(shapes = transformedShapes)
 }
 
+@OptIn(ExperimentalTime::class)
 internal fun getTotalTimeRunning(startTime: Long): Long {
     val currentTime = Clock.System.now().toEpochMilliseconds()
     return (currentTime - startTime)
