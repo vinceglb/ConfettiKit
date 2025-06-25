@@ -4,6 +4,7 @@ import io.github.vinceglb.confettikit.core.models.CoreRect
 import io.github.vinceglb.confettikit.core.models.Shape
 import io.github.vinceglb.confettikit.core.models.Vector
 import kotlin.math.abs
+import kotlin.math.pow
 
 /**
  * Confetti holds all data to the current state of the particle
@@ -106,29 +107,29 @@ internal class Confetti(
         deltaTime: Float,
         drawArea: CoreRect,
     ) {
-        // Calculate frameRate dynamically, fallback to 60fps in case deltaTime is 0
-        frameRate = if (deltaTime > 0) 1f / deltaTime else DEFAULT_FRAME_RATE
+        // Calculate time scale, 1f = 60fps
+        val timeScale = deltaTime * DEFAULT_FRAME_RATE
 
         if (location.y > drawArea.height) {
             alpha = 0
             return
         }
 
-        velocity.add(acceleration)
-        velocity.mult(damping)
+        velocity.addScaled(acceleration, timeScale)
+        velocity.mult(damping.pow(timeScale))
 
-        location.addScaled(velocity, deltaTime * frameRate * pixelDensity)
+        location.addScaled(velocity, timeScale * pixelDensity)
 
         lifespan -= (deltaTime * MILLIS_IN_SECOND).toLong()
         if (lifespan <= 0) updateAlpha(fadeOutElapsed = -lifespan)
 
         // 2D rotation around the center of the confetti
-        rotation += rotationSpeed2D * deltaTime * frameRate
+        rotation += rotationSpeed2D * timeScale
         if (rotation >= FULL_CIRCLE) rotation = 0f
 
         // 3D rotation effect by decreasing the width and make sure that rotationSpeed is always
         // positive by using abs
-        rotationWidth -= abs(rotationSpeed3D) * deltaTime * frameRate
+        rotationWidth -= abs(rotationSpeed3D) * timeScale
         if (rotationWidth < 0) rotationWidth = width
 
         scaleX = abs(rotationWidth / width - 0.5f) * 2
