@@ -48,9 +48,6 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.ui)
             implementation(libs.androidx.lifecycle.runtime.compose)
-
-            // Kotlinx
-            api(libs.kotlinx.datetime)
         }
     }
 }
