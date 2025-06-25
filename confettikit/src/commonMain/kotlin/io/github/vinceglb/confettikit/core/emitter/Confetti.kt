@@ -23,7 +23,7 @@ import kotlin.math.pow
  * @property damping A factor that reduces the particle's velocity over time, simulating air resistance. A higher damping value will slow down the particle faster.
  * @property rotationSpeed3D The speed at which the particle rotates.
  * @property rotationSpeed2D The speed at which the particle rotates in 2D space.
- * @property pixelDensity The pixel density of the device's screen. This is used to ensure that the particle's movement looks consistent across devices with different screen densities.
+ * @property pixelDensity The pixel density of the device's screen. This is used to ensure that the particle's size appears consistent across devices with different screen densities.
  */
 internal class Confetti(
     var location: Vector,
@@ -118,7 +118,7 @@ internal class Confetti(
         velocity.addScaled(acceleration, timeScale)
         velocity.mult(damping.pow(timeScale))
 
-        location.addScaled(velocity, timeScale * pixelDensity)
+        location.addScaled(velocity, timeScale)
 
         lifespan -= (deltaTime * MILLIS_IN_SECOND).toLong()
         if (lifespan <= 0) updateAlpha(fadeOutElapsed = -lifespan)
