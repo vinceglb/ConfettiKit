@@ -78,6 +78,10 @@ internal class PartyEmitter(
         particlesCreated++
         with(party) {
             val randomSize = size[random.nextInt(size.size)]
+            // Scale velocity & rotation speeds to **per-second** units because the
+            // physics engine now integrates using real seconds (Δt).
+            val velocityMultiplier = 60f // old code assumed 60 frames/sec
+
             return Confetti(
                 location = position.get(drawArea).run { Vector(x, y) },
                 width = randomSize.sizeInDp * pixelDensity,
@@ -87,10 +91,13 @@ internal class PartyEmitter(
                 lifespan = timeToLive,
                 fadeOut = fadeOutEnabled,
                 fadeOutDuration = fadeOutDuration,
-                velocity = getVelocity(),
+                velocity = getVelocity().apply {
+                    // convert the previously "per-frame" speed to per-second
+                    this.mult(velocityMultiplier)
+                },
                 damping = party.damping,
-                rotationSpeed2D = rotation.rotationSpeed() * party.rotation.multiplier2D,
-                rotationSpeed3D = rotation.rotationSpeed() * party.rotation.multiplier3D,
+                rotationSpeed2D = rotation.rotationSpeed() * party.rotation.multiplier2D * velocityMultiplier,
+                rotationSpeed3D = rotation.rotationSpeed() * party.rotation.multiplier3D * velocityMultiplier,
                 pixelDensity = pixelDensity,
             )
         }

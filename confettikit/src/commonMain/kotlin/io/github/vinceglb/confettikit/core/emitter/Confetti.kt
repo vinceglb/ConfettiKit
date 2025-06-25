@@ -43,7 +43,14 @@ internal class Confetti(
 ) {
     companion object {
         private const val DEFAULT_FRAME_RATE = 60f
-        private const val GRAVITY = 0.02f
+        /**
+         * The physics engine now works with real elapsed seconds (Δt) instead of a
+         * fixed "frames-per-second" scale factor. To keep the visual behaviour
+         * identical to the original 60 fps implementation we multiply the old
+         * per-frame gravity (0.02) by 60, resulting in a value that represents
+         * dp/sec².
+         */
+        private const val GRAVITY = 0.02f * 60f
         private const val MAX_ALPHA = 255
         private const val MILLIS_IN_SECOND = 1000
         private const val FULL_CIRCLE = 360f
@@ -52,8 +59,7 @@ internal class Confetti(
     var rotation = 0f
     private var rotationWidth = width
 
-    // Expected frame rate
-    private var frameRate = DEFAULT_FRAME_RATE
+    // Gravity in dp/sec² (converted to px during integration)
     private var gravity = Vector(0f, GRAVITY)
 
     var alpha: Int = MAX_ALPHA
@@ -107,29 +113,33 @@ internal class Confetti(
         deltaTime: Float,
         drawArea: CoreRect,
     ) {
-        // Calculate time scale, 1f = 60fps
-        val timeScale = deltaTime * DEFAULT_FRAME_RATE
-
+        // deltaTime is expressed in **seconds**
         if (location.y > drawArea.height) {
             alpha = 0
             return
         }
 
-        velocity.addScaled(acceleration, timeScale)
-        velocity.mult(damping.pow(timeScale))
+        // v = v + a * Δt
+        velocity.addScaled(acceleration, deltaTime)
 
-        location.addScaled(velocity, timeScale * pixelDensity)
+        // Apply damping in a time-independent way.
+        // The damping factor now represents the amount of velocity that
+        // remains after ONE second.
+        velocity.mult(damping.pow(deltaTime))
+
+        // x = x + v * Δt  (convert dp → px once with pixelDensity)
+        location.addScaled(velocity, deltaTime * pixelDensity)
 
         lifespan -= (deltaTime * MILLIS_IN_SECOND).toLong()
         if (lifespan <= 0) updateAlpha(fadeOutElapsed = -lifespan)
 
         // 2D rotation around the center of the confetti
-        rotation += rotationSpeed2D * timeScale
+        rotation += rotationSpeed2D * deltaTime
         if (rotation >= FULL_CIRCLE) rotation = 0f
 
         // 3D rotation effect by decreasing the width and make sure that rotationSpeed is always
         // positive by using abs
-        rotationWidth -= abs(rotationSpeed3D) * timeScale
+        rotationWidth -= abs(rotationSpeed3D) * deltaTime
         if (rotationWidth < 0) rotationWidth = width
 
         scaleX = abs(rotationWidth / width - 0.5f) * 2
