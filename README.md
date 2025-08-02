@@ -133,7 +133,10 @@ Customize how your confetti looks:
 
 **`shapes`**
 - Define what shapes your confetti can be
-- Use `Shape.Circle`, `Shape.Square` and `Shape.Rectangle()`
+- Built-in shapes: `Shape.Circle`, `Shape.Square`, and `Shape.Rectangle(heightRatio)`
+- Custom shapes: `Shape.CustomShape(shape)` for any Compose shape
+- Images: `Shape.Image(imageBitmap)` for bitmap images as confetti
+- Vectors: `Shape.Vector(vectorPainter)` for vector graphics as confetti
 - Example: shapes = listOf(Shape.Circle) for circular confetti only
 
 **`sizes`**
@@ -203,9 +206,26 @@ ConfettiKit is designed to work seamlessly with Compose. You can use it as a Com
 ConfettiKit(
     modifier = Modifier.fillMaxSize(),
     parties = parties,
-    onParticleSystemEnded = { system, activeSystems -> }
+    onParticleSystemStarted = { system, activeSystems -> 
+        // Called when a party animation starts
+    },
+    onParticleSystemEnded = { system, activeSystems -> 
+        // Called when a party animation ends
+    }
 )
 ```
+
+### Callback Parameters
+
+**`onParticleSystemStarted`**
+- Called when a party animation begins
+- Receives the `PartySystem` that started and the count of currently active systems
+- Useful for triggering other UI effects or tracking animation state
+
+**`onParticleSystemEnded`**
+- Called when a party animation completes
+- Receives the `PartySystem` that ended and the count of remaining active systems
+- Perfect for chaining animations or cleaning up resources
 
 ## 🧑‍🍳 Recipes
 
@@ -271,6 +291,36 @@ fun rain(): List<Party> {
             colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
             emitter = Emitter(duration = 3.5.seconds).perSecond(100),
             position = Position.Relative(0.0, 0.0).between(Position.Relative(1.0, 0.0))
+        )
+    )
+}
+```
+
+### 🎨 Custom Shapes
+
+Create confetti with custom shapes, images, or vectors:
+
+```kotlin
+fun customShapes(): List<Party> {
+    return listOf(
+        Party(
+            speed = 15f,
+            maxSpeed = 25f,
+            damping = 0.9f,
+            spread = 360,
+            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+            shapes = listOf(
+                // Custom Compose shapes
+                Shape.CustomShape(RoundedCornerShape(8.dp)),
+                Shape.CustomShape(CircleShape),
+                
+                // Images as confetti
+                Shape.Image(imageBitmap),
+                
+                // Vector graphics
+                Shape.Vector(vectorPainter)
+            ),
+            emitter = Emitter(duration = 3.seconds).perSecond(50),
         )
     )
 }
