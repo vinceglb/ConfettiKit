@@ -25,6 +25,7 @@ import kotlin.time.ExperimentalTime
 public fun ConfettiKit(
     modifier: Modifier = Modifier,
     parties: List<Party>,
+    onParticleSystemStarted: (PartySystem, Int) -> Unit = { _, _ -> },
     onParticleSystemEnded: (PartySystem, Int) -> Unit = { _, _ -> },
 ) {
     lateinit var partySystems: List<PartySystem>
@@ -46,6 +47,10 @@ public fun ConfettiKit(
 
     val density = LocalDensity.current
 
+    // To prevent multiple callbacks for the same event on each frame
+    val startedSystems = remember { mutableSetOf<PartySystem>() }
+    val endedSystems = remember { mutableSetOf<PartySystem>() }
+
     LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
         frameTime.value = 0L
     }
@@ -56,6 +61,8 @@ public fun ConfettiKit(
                 pixelDensity = density.density,
             )
         }
+        startedSystems.clear()
+        endedSystems.clear()
 
         while (true) {
             withInfiniteAnimationFrameMillis { frameMs ->
@@ -68,11 +75,24 @@ public fun ConfettiKit(
                     // Do not start particleSystem yet if totalTimeRunning is below delay
                     if (totalTimeRunning < particleSystem.party.delay) return@map listOf()
 
-                    if (particleSystem.isDoneEmitting()) {
-                        onParticleSystemEnded(
+                    if (particleSystem !in startedSystems) {
+                        onParticleSystemStarted(
                             particleSystem,
-                            partySystems.count { !it.isDoneEmitting() },
+                            partySystems.count {
+                                getTotalTimeRunning(it.createdAt) >= it.party.delay && !it.isDoneEmitting()
+                            },
                         )
+                        startedSystems.add(particleSystem)
+                    }
+
+                    if (particleSystem.isDoneEmitting()) {
+                        if (particleSystem !in endedSystems) {
+                            onParticleSystemEnded(
+                                particleSystem,
+                                partySystems.count { !it.isDoneEmitting() },
+                            )
+                            endedSystems.add(particleSystem)
+                        }
                     }
 
                     particleSystem.render(deltaMs.div(1000f), drawArea.value)
