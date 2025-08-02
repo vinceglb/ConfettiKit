@@ -42,13 +42,14 @@ fun App() {
             }
 
             if (isAnimating) {
+                val presets = Presets.all()
                 ConfettiKit(
                     modifier = Modifier.fillMaxSize(),
-                    parties = Presets.all[index],
+                    parties = presets[index],
                     onParticleSystemEnded = { _, activeSystems ->
                         if (activeSystems == 0 && isAnimating) {
                             isAnimating = false
-                            index = (index + 1) % Presets.all.size
+                            index = (index + 1) % presets.size
                         }
                     },
                 )
