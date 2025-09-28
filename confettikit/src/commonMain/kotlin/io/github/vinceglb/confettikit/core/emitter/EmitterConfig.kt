@@ -40,7 +40,7 @@ public class EmitterConfig(
      * Amount of particles created over the duration that is set
      */
     public fun max(amount: Int): EmitterConfig {
-        this.amountPerMs = (emittingTime / amount) / 1000f
+        this.amountPerMs = (emittingTime.toFloat() / amount) / 1000f
         return this
     }
 
