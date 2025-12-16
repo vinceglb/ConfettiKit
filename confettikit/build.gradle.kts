@@ -23,6 +23,9 @@ kotlin {
                 excludes += "/META-INF/{AL2.0,LGPL2.1}"
             }
         }
+
+        // Add Android Unit tests
+        withHostTest {}
     }
 
     // iOS
