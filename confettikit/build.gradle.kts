@@ -1,8 +1,7 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
@@ -12,13 +11,21 @@ plugins {
 kotlin {
     explicitApi()
 
-    androidTarget {
-        publishLibraryVariants("release")
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+    // Android
+    androidLibrary {
+        namespace = "io.github.vinceglb.confettikit"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+        // Exclude unwanted META-INF files to avoid packaging conflicts
+        packaging {
+            resources {
+                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            }
         }
     }
-    
+
+    // iOS
     listOf(
         iosX64(),
         iosArm64(),
@@ -27,20 +34,26 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ConfettiKit"
             isStatic = true
+            binaryOption("bundleId", "io.github.vinceglb.confettikit")
         }
     }
-    
+
+    // Desktop JVM
     jvm()
-    
-    @OptIn(ExperimentalWasmDsl::class)
-    listOf (
-        js(),
-        wasmJs(),
-    ).forEach {
-        it.outputModuleName = "ConfettiKit"
-        it.browser()
+
+    // JS
+    js {
+        browser()
+        binaries.executable()
     }
-    
+
+    // Wasm
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        binaries.executable()
+    }
+
     sourceSets {
         commonMain.dependencies {
             // Compose
@@ -49,17 +62,5 @@ kotlin {
             implementation(compose.ui)
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
-    }
-}
-
-android {
-    namespace = "io.github.vinceglb.confettikit"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
 }
