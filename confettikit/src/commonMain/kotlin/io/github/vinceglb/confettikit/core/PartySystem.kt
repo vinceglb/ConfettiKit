@@ -32,13 +32,14 @@ public class PartySystem(
         deltaTime: Float,
         drawArea: CoreRect,
     ): List<Particle> {
-        if (enabled) {
-            activeParticles.addAll(emitter.createConfetti(deltaTime, party, drawArea))
-        }
-
         activeParticles.forEach { it.render(deltaTime, drawArea) }
 
         activeParticles.removeAll { it.isDead() }
+
+        if (enabled) {
+            activeParticles.addAll(emitter.createConfetti(deltaTime, party, drawArea))
+            activeParticles.removeAll { it.isDead() }
+        }
 
         return activeParticles.filter { it.drawParticle }.map { it.toParticle() }
     }
