@@ -9,6 +9,7 @@ import io.github.vinceglb.confettikit.core.models.Size
 import io.github.vinceglb.confettikit.core.models.Vector
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
 
@@ -40,14 +41,11 @@ internal class PartyEmitter(
         party: Party,
         drawArea: CoreRect,
     ): List<Confetti> {
-        createParticleMs += deltaTime
+        val safeDeltaTimeSeconds = deltaTime.coerceAtLeast(0f)
+        val deltaTimeSecondsForEmission = limitToRemainingEmittingTime(safeDeltaTimeSeconds)
+        val postEmissionSeconds = safeDeltaTimeSeconds - deltaTimeSecondsForEmission
 
-        // Initial deltaTime can't be higher than the emittingTime, if so calculate
-        // amount of particles based on max emittingTime
-        val emittingTime = emitterConfig.emittingTime / 1000f
-        if (elapsedTime == 0f && deltaTime > emittingTime) {
-            createParticleMs = emittingTime
-        }
+        createParticleMs += deltaTimeSecondsForEmission
 
         var particles = listOf<Confetti>()
 
@@ -56,13 +54,17 @@ internal class PartyEmitter(
             // Calculate how many particle  to create in the elapsed time
             val amount: Int = (createParticleMs / emitterConfig.amountPerMs).toInt()
 
-            particles = (1..amount).map { createParticle(party, drawArea) }
+            val remainderSeconds = createParticleMs % emitterConfig.amountPerMs
+            particles = (0 until amount).map { index ->
+                val ageSeconds = postEmissionSeconds + remainderSeconds + (amount - 1 - index) * emitterConfig.amountPerMs
+                createParticle(party, drawArea).also { it.render(ageSeconds, drawArea) }
+            }
 
             // Reset timer and add left over time for next cycle
-            createParticleMs %= emitterConfig.amountPerMs
+            createParticleMs = remainderSeconds
         }
 
-        elapsedTime += deltaTime * 1000
+        elapsedTime += safeDeltaTimeSeconds * 1000
         return particles
     }
 
@@ -176,6 +178,14 @@ internal class PartyEmitter(
             0L -> false
             else -> elapsedTime >= emitterConfig.emittingTime
         }
+    }
+
+    private fun limitToRemainingEmittingTime(deltaTimeSeconds: Float): Float {
+        val emittingTimeMs = emitterConfig.emittingTime
+        if (emittingTimeMs <= 0L) return deltaTimeSeconds
+
+        val remainingMs = (emittingTimeMs.toFloat() - elapsedTime).coerceAtLeast(0f)
+        return min(deltaTimeSeconds, remainingMs / 1000f)
     }
 
     override fun isFinished(): Boolean {
