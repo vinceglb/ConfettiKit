@@ -62,5 +62,8 @@ kotlin {
             implementation(compose.ui)
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }
