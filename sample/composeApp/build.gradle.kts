@@ -18,39 +18,27 @@ kotlin {
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            binaryOption("bundleId", "io.github.vinceglb.confettikit.sample")
         }
     }
 
     jvm("desktop")
 
+    js {
+        browser()
+        binaries.executable()
+    }
+
     @OptIn(ExperimentalWasmDsl::class)
-    listOf(
-        js(),
-        wasmJs(),
-    ).forEach {
-        it.outputModuleName = "sampleApp"
-        it.browser {
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "sampleApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
-        it.binaries.executable()
+    wasmJs {
+        browser()
+        binaries.executable()
     }
 
     sourceSets {
