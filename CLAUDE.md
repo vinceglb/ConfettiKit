@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew :confettikit:jvmTest
 
 # Run the sample desktop app
-./gradlew :sample:composeApp:run
+./gradlew :sample:desktopApp:run
 
 # Publish to Maven Local (for local testing)
 ./gradlew publishToMavenLocal
@@ -28,7 +28,10 @@ This is a Kotlin Multiplatform library for confetti animations in Compose Multip
 - **confettikit/** - The main library module
   - Targets: Android, iOS (arm64/x64/simulatorArm64), JVM, JS, WASM
   - Uses explicit API mode (`explicitApi()`)
-- **sample/composeApp/** - Sample application demonstrating the library
+- **sample/shared/** - Shared sample UI and business logic module
+- **sample/androidApp/** - Android launcher module for the sample
+- **sample/desktopApp/** - Desktop launcher module for the sample
+- **sample/webApp/** - Web launcher module for the sample
 
 ## Architecture
 
