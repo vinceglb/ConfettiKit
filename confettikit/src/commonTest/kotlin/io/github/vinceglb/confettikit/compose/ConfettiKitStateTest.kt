@@ -25,6 +25,31 @@ internal class ConfettiKitStateTest {
     }
 
     @Test
+    fun `initiallyPaused seeds isPaused at construction`() {
+        val paused = ConfettiKitState(initiallyPaused = true) { Random.Default }
+        assertTrue(paused.isPaused)
+
+        val live = ConfettiKitState(initiallyPaused = false) { Random.Default }
+        assertFalse(live.isPaused)
+    }
+
+    @Test
+    fun `initialTimelineMs seeds pending advance at construction`() {
+        val state = ConfettiKitState(initialTimelineMs = 2_000L) { Random.Default }
+
+        // The advance is queued, not applied — timelineMs only moves on the next frame.
+        assertEquals(0L, state.timelineMs)
+        assertEquals(2_000L, state.takePendingAdvance())
+    }
+
+    @Test
+    fun `initialTimelineMs rejects negative values`() {
+        assertFailsWith<IllegalArgumentException> {
+            ConfettiKitState(initialTimelineMs = -1L) { Random.Default }
+        }
+    }
+
+    @Test
     fun `advance accumulates pending delta and is consumed once`() {
         val state = ConfettiKitState { Random.Default }
 

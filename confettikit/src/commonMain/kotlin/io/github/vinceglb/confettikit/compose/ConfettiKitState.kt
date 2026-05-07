@@ -11,6 +11,15 @@ import kotlin.random.Random
 /**
  * Creates and remembers a [ConfettiKitState] for use with [ConfettiKit].
  *
+ * @param initiallyPaused if `true`, the simulation starts in the paused state. Pair with
+ * [initialTimelineMs] to render a single static frame at a known timestamp. Defaults to `false`
+ * (live playback).
+ * @param initialTimelineMs an initial advance, in milliseconds, queued for the first frame.
+ * The simulation is actually run forward by this amount (sub-stepped like a manual scrub), so
+ * the resulting frame matches what you would have seen at that timestamp during live playback.
+ * Most useful with `initiallyPaused = true` for previews. With live playback, the entire
+ * advance is consumed in the first frame, which can look like a sudden fast-forward.
+ * Defaults to `0`.
  * @param random factory invoked to obtain the [Random] instance handed to each [io.github.vinceglb.confettikit.core.PartySystem].
  * The factory is called once on creation and again on every [ConfettiKitState.reset] so that callers
  * who pass `{ Random(seed) }` get reproducible playback. The default `{ Random.Default }` matches the
@@ -18,8 +27,10 @@ import kotlin.random.Random
  */
 @Composable
 public fun rememberConfettiKitState(
+    initiallyPaused: Boolean = false,
+    initialTimelineMs: Long = 0L,
     random: () -> Random = { Random.Default },
-): ConfettiKitState = remember { ConfettiKitState(random) }
+): ConfettiKitState = remember { ConfettiKitState(initiallyPaused, initialTimelineMs, random) }
 
 /**
  * Hoisted state for [ConfettiKit] that exposes a more granular API for animation control.
@@ -34,11 +45,19 @@ public fun rememberConfettiKitState(
  */
 @Stable
 public class ConfettiKitState internal constructor(
+    initiallyPaused: Boolean = false,
+    initialTimelineMs: Long = 0L,
     initialRandomFactory: () -> Random,
 ) {
-    private val pausedState = mutableStateOf(false)
+    init {
+        require(initialTimelineMs >= 0L) {
+            "initialTimelineMs must be non-negative, was $initialTimelineMs"
+        }
+    }
+
+    private val pausedState = mutableStateOf(initiallyPaused)
     private val timelineMsState = mutableLongStateOf(0L)
-    private var pendingAdvanceMs: Long = 0L
+    private var pendingAdvanceMs: Long = initialTimelineMs
 
     private var randomFactory: () -> Random = initialRandomFactory
 
