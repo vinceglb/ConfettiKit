@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 
-class HeartShape: Shape {
+object HeartShape : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,

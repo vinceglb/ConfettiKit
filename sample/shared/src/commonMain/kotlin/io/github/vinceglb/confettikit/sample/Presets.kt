@@ -31,7 +31,7 @@ class Presets {
                     colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
                     shapes = listOf(
                         Shape.CustomShape(CircleShape),
-                        Shape.CustomShape(HeartShape()),
+                        Shape.CustomShape(HeartShape),
                         Shape.CustomShape(RoundedCornerShape(5.dp))
                     ),
                     emitter = Emitter(duration = 100.milliseconds).max(100),
@@ -81,10 +81,10 @@ class Presets {
         }
 
         @Composable
-        fun all() = listOf(
-            explode(),
-            parade(),
-            rain(),
+        fun all(): List<Pair<String, List<Party>>> = listOf(
+            "Explode 💥" to explode(),
+            "Parade 🎉" to parade(),
+            "Rain 🌧" to rain(),
         )
     }
 }

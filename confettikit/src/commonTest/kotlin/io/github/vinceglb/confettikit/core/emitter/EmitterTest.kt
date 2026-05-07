@@ -2,6 +2,7 @@ package io.github.vinceglb.confettikit.core.emitter
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -39,5 +40,22 @@ internal class EmitterTest {
 
         assertEquals(expected = 100, actual = config.emittingTime)
         assertEquals(expected = 0.0001f, actual = config.amountPerMs, absoluteTolerance = TOLERANCE)
+    }
+
+    @Test
+    fun `two configs built from the same builder calls are structurally equal`() {
+        val a = Emitter(duration = 1.seconds).max(amount = 100)
+        val b = Emitter(duration = 1.seconds).max(amount = 100)
+
+        assertEquals(a, b)
+        assertEquals(a.hashCode(), b.hashCode())
+    }
+
+    @Test
+    fun `configs with different field values are not equal`() {
+        val a = Emitter(duration = 1.seconds).max(amount = 100)
+        val b = Emitter(duration = 1.seconds).max(amount = 50)
+
+        assertNotEquals(a, b)
     }
 }
