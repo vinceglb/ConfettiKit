@@ -21,8 +21,10 @@ internal fun Project.configureKotlinMultiplatform(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
+        macosArm64(),
+        macosX64()
+    ).forEach { appleTarget ->
+        appleTarget.binaries.framework {
             isStatic = true
             baseName = frameworkBaseName
             binaryOption("bundleId", modulePackage)
