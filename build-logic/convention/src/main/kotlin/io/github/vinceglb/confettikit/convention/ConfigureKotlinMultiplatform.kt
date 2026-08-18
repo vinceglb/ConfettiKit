@@ -12,6 +12,7 @@ internal fun Project.configureKotlinMultiplatform(
     frameworkBaseName: String,
 ) = extension.apply {
     applyDefaultHierarchyTemplate()
+    jvmToolchain(17)
 
     extensions.configure<KotlinMultiplatformAndroidLibraryExtension> {
         configureAndroidKmpLibrary(this, modulePackage = modulePackage)
