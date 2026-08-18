@@ -26,7 +26,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Kotlin Multiplatform library for confetti animations in Compose Multiplatform.
 
 - **confettikit/** - The main library module
-  - Targets: Android, iOS (arm64/x64/simulatorArm64), JVM, JS, WASM
+  - Targets: Android, iOS (arm64/simulatorArm64), macOS (arm64), JVM, JS, WASM
   - Uses explicit API mode (`explicitApi()`)
 - **sample/shared/** - Shared sample UI and business logic module
 - **sample/androidApp/** - Android launcher module for the sample
