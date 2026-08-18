@@ -4,6 +4,7 @@ import io.github.vinceglb.confettikit.core.emitter.BaseEmitter
 import io.github.vinceglb.confettikit.core.emitter.Confetti
 import io.github.vinceglb.confettikit.core.emitter.PartyEmitter
 import io.github.vinceglb.confettikit.core.models.CoreRect
+import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -13,16 +14,19 @@ import kotlin.time.ExperimentalTime
  * @param party configuration class with instructions on how to create the particles for the Emitter
  * @param createdAt timestamp of when the partySystem is created
  * @param pixelDensity default value taken from resources to measure based on pixelDensity
+ * @param random source of randomness used by the emitter for color, shape, size, angle, speed and
+ * rotation jitter. Defaults to [Random.Default]; pass a seeded [Random] for deterministic output.
  */
 @OptIn(ExperimentalTime::class)
 public class PartySystem(
     public val party: Party,
     public val createdAt: Long = Clock.System.now().toEpochMilliseconds(),
     pixelDensity: Float,
+    random: Random = Random.Default,
 ) {
     private var enabled = true
 
-    private var emitter: BaseEmitter = PartyEmitter(party.emitter, pixelDensity)
+    private var emitter: BaseEmitter = PartyEmitter(party.emitter, pixelDensity, random)
 
     private val activeParticles = mutableListOf<Confetti>()
 
@@ -49,7 +53,8 @@ public class PartySystem(
      * @return true if the emitter is done emitting or false when it's still busy or needs to start
      * based on the delay
      */
-    internal fun isDoneEmitting(): Boolean = (emitter.isFinished() && activeParticles.size == 0) || (!enabled && activeParticles.size == 0)
+    internal fun isDoneEmitting(): Boolean =
+        (emitter.isFinished() && activeParticles.isEmpty()) || (!enabled && activeParticles.isEmpty())
 
     internal fun getActiveParticleAmount() = activeParticles.size
 }
