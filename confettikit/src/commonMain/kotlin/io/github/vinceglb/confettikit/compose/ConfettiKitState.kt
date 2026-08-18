@@ -58,6 +58,7 @@ public class ConfettiKitState internal constructor(
     private val pausedState = mutableStateOf(initiallyPaused)
     private val timelineMsState = mutableLongStateOf(0L)
     private var pendingAdvanceMs: Long = initialTimelineMs
+    private var pendingAdvanceOverridesFrameDelta: Boolean = initialTimelineMs > 0L
 
     private var randomFactory: () -> Random = initialRandomFactory
 
@@ -151,6 +152,9 @@ public class ConfettiKitState internal constructor(
                 if (targetMs > 0L) advance(targetMs)
             }
         }
+        // `advanceTo` is an absolute seek. Applying the next real frame delta as well would
+        // overshoot the requested target whenever playback is not paused.
+        pendingAdvanceOverridesFrameDelta = true
     }
 
     /**
@@ -163,6 +167,7 @@ public class ConfettiKitState internal constructor(
      */
     public fun reset() {
         pendingAdvanceMs = 0L
+        pendingAdvanceOverridesFrameDelta = false
         timelineMsState.longValue = 0L
         random = randomFactory()
         resetSignal.intValue++
@@ -190,11 +195,18 @@ public class ConfettiKitState internal constructor(
         randomFactory = factory
     }
 
-    /** Consume any pending manual advance; returns the value and zeros it out. */
-    internal fun takePendingAdvance(): Long {
-        val v = pendingAdvanceMs
+    /**
+     * Consume the time to simulate on the next frame.
+     *
+     * Relative [advance] calls are added to live playback. Absolute [advanceTo] calls replace
+     * the next live delta so the resulting timeline lands exactly on the requested target.
+     */
+    internal fun takeEffectiveAdvance(realDeltaMs: Long): Long {
+        val pendingAdvance = pendingAdvanceMs
+        val includeRealDelta = !isPaused && !pendingAdvanceOverridesFrameDelta
         pendingAdvanceMs = 0L
-        return v
+        pendingAdvanceOverridesFrameDelta = false
+        return pendingAdvance + if (includeRealDelta) realDeltaMs else 0L
     }
 
     /** Increment the logical timeline by [deltaMs]. Called by the composable's frame loop. */

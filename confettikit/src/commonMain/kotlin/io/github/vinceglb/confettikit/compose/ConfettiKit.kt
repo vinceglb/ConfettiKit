@@ -64,16 +64,18 @@ public fun ConfettiKit(
     // rebuilds (state.reset()) are handled inside the loop on the resetSignal so scrubbing
     // doesn't tear down the coroutine.
     LaunchedEffect(state, parties) {
-        var partySystems = parties.map {
+        fun createPartySystems(): List<PartySystem> = parties.map { party ->
             PartySystem(
-                party = storeImages(it),
+                party = storeImages(party),
                 pixelDensity = density.density,
                 random = state.random,
             )
         }
-        // Logical timeline at which each system was first considered for emission.
-        // -1 means "not started yet". Initialized lazily once timelineMs has advanced.
-        var systemStartTimelineMs = LongArray(partySystems.size) { -1L }
+
+        var partySystems = createPartySystems()
+        // All systems in a parties list are created together. Delays are measured from this
+        // shared logical timestamp, including when a new preset replaces one already running.
+        var systemsStartTimelineMs = state.timelineMs
         // To prevent multiple callbacks for the same event on each frame
         val startedSystems = mutableSetOf<PartySystem>()
         val endedSystems = mutableSetOf<PartySystem>()
@@ -88,14 +90,8 @@ public fun ConfettiKit(
             withInfiniteAnimationFrameMillis { frameMs ->
                 val signal = state.resetSignal.intValue
                 if (signal != lastResetSignal) {
-                    partySystems = parties.map {
-                        PartySystem(
-                            party = storeImages(it),
-                            pixelDensity = density.density,
-                            random = state.random,
-                        )
-                    }
-                    systemStartTimelineMs = LongArray(partySystems.size) { -1L }
+                    partySystems = createPartySystems()
+                    systemsStartTimelineMs = state.timelineMs
                     startedSystems.clear()
                     endedSystems.clear()
                     particles.value = emptyList()
@@ -106,8 +102,7 @@ public fun ConfettiKit(
                 val realDeltaMs = if (frameTime.value > 0) (frameMs - frameTime.value) else 0L
                 frameTime.value = frameMs
 
-                val pending = state.takePendingAdvance()
-                val effectiveMs = (if (state.isPaused) 0L else realDeltaMs) + pending
+                val effectiveMs = state.takeEffectiveAdvance(realDeltaMs)
 
                 if (effectiveMs <= 0L) {
                     // No time advance; particles list is unchanged. Drawing the previous list
@@ -128,21 +123,13 @@ public fun ConfettiKit(
                     val stepMs = remaining.coerceAtMost(SUB_STEP_MS)
                     localTimelineMs += stepMs
                     remaining -= stepMs
-                    val stepSeconds = stepMs / 1000f
-
-                    lastParticles = partySystems.mapIndexed { index, particleSystem ->
-                        if (systemStartTimelineMs[index] < 0L) {
-                            systemStartTimelineMs[index] = localTimelineMs - stepMs
-                        }
-                        val totalTimeRunning = localTimelineMs - systemStartTimelineMs[index]
-                        if (totalTimeRunning < particleSystem.party.delay) return@mapIndexed listOf()
+                    lastParticles = partySystems.map { particleSystem ->
+                        val totalTimeRunning = localTimelineMs - systemsStartTimelineMs
+                        if (totalTimeRunning < particleSystem.party.delay) return@map listOf()
 
                         if (particleSystem !in startedSystems) {
-                            val activeCount = partySystems.indices.count { i ->
-                                val started = systemStartTimelineMs[i]
-                                started >= 0L &&
-                                        (localTimelineMs - started) >= partySystems[i].party.delay &&
-                                        !partySystems[i].isDoneEmitting()
+                            val activeCount = partySystems.count {
+                                totalTimeRunning >= it.party.delay && !it.isDoneEmitting()
                             }
                             currentOnStarted(particleSystem, activeCount)
                             startedSystems.add(particleSystem)
@@ -158,7 +145,12 @@ public fun ConfettiKit(
                             }
                         }
 
-                        particleSystem.render(stepSeconds, drawArea.value)
+                        val activeStepMs = postDelayStepMs(
+                            totalTimeRunningMs = totalTimeRunning,
+                            delayMs = particleSystem.party.delay.toLong(),
+                            stepMs = stepMs,
+                        )
+                        particleSystem.render(activeStepMs / 1000f, drawArea.value)
                     }.flatten()
                 }
                 state.advanceTimeline(localTimelineMs - startTimelineMs)
@@ -201,6 +193,13 @@ public fun ConfettiKit(
         },
     )
 }
+
+/** Return how much of the current simulation step occurred after a party's delay elapsed. */
+internal fun postDelayStepMs(
+    totalTimeRunningMs: Long,
+    delayMs: Long,
+    stepMs: Long,
+): Long = (totalTimeRunningMs - delayMs).coerceIn(0L, stepMs)
 
 /**
  * Transforms the shapes in the given [Party] object. If a shape is a [Shape.DrawableShape],

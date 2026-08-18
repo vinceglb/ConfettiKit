@@ -39,7 +39,7 @@ internal class ConfettiKitStateTest {
 
         // The advance is queued, not applied — timelineMs only moves on the next frame.
         assertEquals(0L, state.timelineMs)
-        assertEquals(2_000L, state.takePendingAdvance())
+        assertEquals(2_000L, state.takeEffectiveAdvance(realDeltaMs = 16L))
     }
 
     @Test
@@ -56,8 +56,8 @@ internal class ConfettiKitStateTest {
         state.advance(100L)
         state.advance(50L)
 
-        assertEquals(150L, state.takePendingAdvance())
-        assertEquals(0L, state.takePendingAdvance(), "second take should be empty")
+        assertEquals(166L, state.takeEffectiveAdvance(realDeltaMs = 16L))
+        assertEquals(16L, state.takeEffectiveAdvance(realDeltaMs = 16L), "second take should be live only")
     }
 
     @Test
@@ -88,7 +88,7 @@ internal class ConfettiKitStateTest {
         state.reset()
 
         assertEquals(0L, state.timelineMs)
-        assertEquals(0L, state.takePendingAdvance())
+        assertEquals(0L, state.takeEffectiveAdvance(realDeltaMs = 0L))
         assertEquals(signalBefore + 1, state.resetSignal.intValue)
     }
 
@@ -134,7 +134,7 @@ internal class ConfettiKitStateTest {
         state.advanceTo(500L)
 
         assertEquals(0L, state.timelineMs, "timeline only advances on frame, not on advanceTo")
-        assertEquals(500L, state.takePendingAdvance())
+        assertEquals(500L, state.takeEffectiveAdvance(realDeltaMs = 16L))
     }
 
     @Test
@@ -145,7 +145,7 @@ internal class ConfettiKitStateTest {
         state.advanceTo(500L)
 
         assertEquals(0L, state.timelineMs)
-        assertEquals(500L, state.takePendingAdvance())
+        assertEquals(500L, state.takeEffectiveAdvance(realDeltaMs = 16L))
     }
 
     @Test
@@ -162,7 +162,7 @@ internal class ConfettiKitStateTest {
         state.advanceTo(1000L)
 
         assertEquals(1000L, state.timelineMs)
-        assertEquals(0L, state.takePendingAdvance())
+        assertEquals(0L, state.takeEffectiveAdvance(realDeltaMs = 16L))
     }
 
     @Test
@@ -175,7 +175,7 @@ internal class ConfettiKitStateTest {
         state.setRandomFactory { Random(7L) }
 
         assertEquals(2000L, state.timelineMs, "timeline preserved")
-        assertEquals(500L, state.takePendingAdvance(), "pending preserved")
+        assertEquals(516L, state.takeEffectiveAdvance(realDeltaMs = 16L), "pending preserved")
         assertEquals(signalBefore, state.resetSignal.intValue, "no reset signal")
 
         // The next explicit reset pulls from the new factory.
@@ -196,7 +196,7 @@ internal class ConfettiKitStateTest {
         state.useRandom { Random(123L) }
 
         assertEquals(0L, state.timelineMs)
-        assertEquals(0L, state.takePendingAdvance())
+        assertEquals(0L, state.takeEffectiveAdvance(realDeltaMs = 0L))
         assertEquals(signalBefore + 1, state.resetSignal.intValue)
 
         // Subsequent reset uses the new factory
@@ -219,7 +219,7 @@ internal class ConfettiKitStateTest {
         assertEquals(0L, state.timelineMs, "timeline untouched")
         assertEquals(
             200L,
-            state.takePendingAdvance(),
+            state.takeEffectiveAdvance(realDeltaMs = 16L),
             "pending trimmed so effective lands at target"
         )
         assertEquals(signalBefore, state.resetSignal.intValue, "no reset signal incremented")
@@ -234,7 +234,7 @@ internal class ConfettiKitStateTest {
         state.advanceTo(990L) // backward 10, fits
 
         assertEquals(0L, state.timelineMs)
-        assertEquals(990L, state.takePendingAdvance())
+        assertEquals(990L, state.takeEffectiveAdvance(realDeltaMs = 16L))
         assertEquals(signalBefore, state.resetSignal.intValue)
     }
 
@@ -249,7 +249,7 @@ internal class ConfettiKitStateTest {
         state.advanceTo(900L) // backward 100, pending=0 cannot absorb
 
         assertEquals(0L, state.timelineMs)
-        assertEquals(900L, state.takePendingAdvance())
+        assertEquals(900L, state.takeEffectiveAdvance(realDeltaMs = 16L))
         assertEquals(signalBefore + 1, state.resetSignal.intValue)
     }
 
@@ -263,6 +263,40 @@ internal class ConfettiKitStateTest {
         state.advanceTo(0L)
 
         assertEquals(0L, state.timelineMs, "must hard-land at zero")
-        assertEquals(0L, state.takePendingAdvance())
+        assertEquals(0L, state.takeEffectiveAdvance(realDeltaMs = 16L))
+    }
+
+    @Test
+    fun `advanceTo overrides the next live frame delta`() {
+        val state = ConfettiKitState { Random.Default }
+
+        state.advanceTo(500L)
+
+        assertEquals(500L, state.takeEffectiveAdvance(realDeltaMs = 16L))
+        assertEquals(16L, state.takeEffectiveAdvance(realDeltaMs = 16L))
+    }
+
+    @Test
+    fun `advance while paused ignores the live frame delta`() {
+        val state = ConfettiKitState(initiallyPaused = true) { Random.Default }
+        state.advance(250L)
+
+        assertEquals(250L, state.takeEffectiveAdvance(realDeltaMs = 16L))
+    }
+
+    @Test
+    fun `sub-step ending at delay advances the system by zero`() {
+        assertEquals(
+            expected = 0L,
+            actual = postDelayStepMs(totalTimeRunningMs = 1_000L, delayMs = 1_000L, stepMs = 8L),
+        )
+    }
+
+    @Test
+    fun `sub-step crossing delay advances only its post-delay portion`() {
+        assertEquals(
+            expected = 3L,
+            actual = postDelayStepMs(totalTimeRunningMs = 1_003L, delayMs = 1_000L, stepMs = 8L),
+        )
     }
 }
