@@ -10,6 +10,7 @@
     <img src="https://img.shields.io/maven-central/v/io.github.vinceglb/confettikit" alt="ConfettiKit Kotlin Maven Version" />
     <img src="https://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android" alt="Badge Android" />
     <img src="https://img.shields.io/badge/Platform-iOS-lightgrey.svg?logo=apple" alt="Badge iOS" />
+    <img src="https://img.shields.io/badge/Platform-macOS-lightgrey.svg?logo=apple" alt="Badge macOS" />
     <img src="https://img.shields.io/badge/Platform-JVM-8A2BE2.svg?logo=openjdk" alt="Badge JVM" />
     <img src="https://img.shields.io/badge/Platform-WASM%20%2F%20JS-yellow.svg?logo=javascript" alt="Badge WASM / JS" />
   </div>

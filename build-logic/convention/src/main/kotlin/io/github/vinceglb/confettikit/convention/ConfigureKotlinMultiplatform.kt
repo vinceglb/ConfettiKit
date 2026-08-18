@@ -29,6 +29,8 @@ internal fun Project.configureKotlinMultiplatform(
         }
     }
 
+    macosArm64()
+
     jvm()
 
     js {
