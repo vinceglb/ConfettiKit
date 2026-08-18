@@ -18,7 +18,6 @@ internal fun Project.configureKotlinMultiplatform(
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
         macosArm64(),
